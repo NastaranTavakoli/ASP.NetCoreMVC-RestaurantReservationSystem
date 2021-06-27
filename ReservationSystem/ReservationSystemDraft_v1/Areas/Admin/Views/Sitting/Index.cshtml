@@ -1,0 +1,88 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Sitting.Index
+
+<div class="row mb-3 align-items-center">
+    <div class="col-md mb-2">
+        <h1>Sittings at @ViewBag.Restaurant</h1>
+    </div>
+    <div class="col-md-3 text-md-right">
+        <a class="btn btn-primary" asp-action="NewSitting">Create New Sitting</a>
+    </div>
+</div>
+<div class="form-row mb-3">
+    <div class="col">
+        <label asp-for="Date">View sittings for: </label>
+        <div class="row">
+            <div class="col-6 col-md-3">
+                <div class="form-inline">
+                    <input class="form-control" asp-for="Date" />
+                </div>
+            </div>
+            <div class="col justify-content-end">
+                <a class="btn btn-primary" id="viewByDateLink" href="@($"/Admin/Sitting/ViewByDate?date={Model.Date.ToString("yyyy-MM-dd")}")">View</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <h2>Sittings by Type</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Dates</th>
+                        <th>Times</th>
+                        <th class="text-center">Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var type in Model.SittingTypes)
+                    {
+                        var scheduledSittings = Model.SittingTemplates.Where(st => st.SittingTypeId == type.Id).ToList();
+                        var oneOffSittings = Model.Sittings.Where(s => s.SittingTemplateId == null && s.SittingTypeId == type.Id).ToList();
+                        <tr class="bg-dark">
+                            <th colspan="3"><strong>@type.Description</strong></th>
+                            <th class="text-right"><a class="ml-5 text-light" asp-action="Rename" asp-route-sittingTypeId="@type.Id">Rename</a></th>
+                        </tr>
+                        @if (scheduledSittings.Count > 0)
+                        {
+                            <tr class="text-primary"><th class="font-weight-bold" colspan="4">Regular</th></tr>
+                            @foreach (var stemp in scheduledSittings)
+                            {
+                                <tr>
+                                    <td class="align-middle text-nowrap">@stemp.Name</td>
+                                    <td class="align-middle text-nowrap">@stemp.StartDate.ToShortDateString() to @stemp.EndDate.ToShortDateString()</td>
+                                    <td class="align-middle text-nowrap">@stemp.StartTime.ToShortTimeString() to @stemp.EndTime.ToShortTimeString()</td>
+                                    <td class="align-middle text-nowrap text-right">
+                                        <a class="btn btn-primary" asp-action="ViewByType" asp-route-templateId="@stemp.Id">View All</a>
+                                        <a class="btn btn-warning" asp-action="EditByType" asp-route-templateId="@stemp.Id">Edit All</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                        @if (oneOffSittings.Count > 0)
+                        {
+                            <tr class="bg-dark"><th class="text-primary font-weight-bold" colspan="4">One-Off</th></tr>
+                            @foreach (var sitting in oneOffSittings)
+                            {
+                                <tr>
+                                    <td class="align-middle text-nowrap">@(sitting.Name ?? "No name")</td>
+                                    <td class="align-middle text-nowrap">@sitting.StartTime.ToLongDateString()</td>
+                                    <td class="align-middle text-nowrap">@sitting.StartTime.ToShortTimeString() to @sitting.EndTime.ToShortTimeString()</td>
+                                    <td class="align-middle text-nowrap text-right"><a class="btn btn-primary" asp-action="Details" asp-route-sittingId="@sitting.Id">Details</a></td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/js/admin.sitting.index.js"></script>
+}

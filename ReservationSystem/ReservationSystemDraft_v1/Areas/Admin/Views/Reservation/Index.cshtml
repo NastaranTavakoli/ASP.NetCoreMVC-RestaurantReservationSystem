@@ -1,0 +1,219 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Reservation.DaysReservations
+
+<partial name="_ReservationNavPartial" />
+
+@{
+    string returnUrl = Context.Request.Path.ToString() + Context.Request.QueryString.ToString();
+}
+
+@*<a asp-controller="Reservation" asp-action="Index" class="btn btn-primary mb-3">&#10096;</a>*@
+<section class="row align-items-center">
+    <div class="col text-center">
+        <a class="btn btn-primary" asp-action="Index" asp-route-date="@Model.DateTime.AddDays(-1).ToString("yyyy-MM-dd")">
+            &laquo;
+        </a>
+    </div>
+    <div class="col text-center">
+        <h2 class="d-none d-lg-inline">@Model.DateTime.ToLongDateString()</h2>
+        <h2 class="d-inline d-lg-none">@Model.DateTime.ToShortDateString()</h2>
+    </div>
+    <div class="col text-center">
+        <a class="btn btn-primary" asp-action="Index" asp-route-date="@Model.DateTime.AddDays(1).ToString("yyyy-MM-dd")">
+            &raquo;
+        </a>
+    </div>
+</section>
+<hr />
+
+<div class="row mb-3 justify-content-center">
+    <div class="col text-center">
+        @foreach (var s in Model.Sittings)
+        {
+            <a asp-action="Index" asp-route-sittingId="@s.Id" asp-route-date="@s.StartTime.ToString("yyyy-MM-dd")" class="mx-2 btn @(Model.SittingId == s.Id ? "btn-primary" : "btn-outline-secondary")">@s.SittingType.Description</a>
+        }
+    </div>
+</div>
+
+<div class="form-row mb-3 justify-content-center align-items-center">
+        <div class="col-auto col-md-4">
+            <label for="SearchString" class="sr-only">Search</label>
+            <input class="form-control" asp-for="SearchString" placeholder="Search by name or reservation code"/>
+        </div>
+        <div class="col-auto">
+            <a id="searchLink" href="" class="btn btn-primary disabled">Search</a>
+            <input type="hidden" asp-for="@Model.SittingId" />
+        </div>
+</div>
+
+@if (!Model.Reservations.Any())
+{
+    <p class="alert alert-info">No reservations for this sitting</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr><th>Time</th><th>PAX</th><th>Customer</th><th>Table(s)</th><th>Current State</th><th>Update State</th><th>Info</th></tr>
+            </thead>
+            <tbody>
+                @if (Model.Reservations.Any(r => !r.ReservationTables.Any()))
+                {
+                    <tr class="bg-dark">
+                        <td colspan="7"><strong>Unseated</strong></td>
+                    </tr>
+                }
+                @foreach (var r in Model.Reservations.Where(r => !r.ReservationTables.Any()))
+                {
+                    <tr class="clickable-row" onclick="window.location='@($"/Admin/Reservation/Details?id={r.Id}&returnUrl={Context.Request.Path.ToString() + Uri.EscapeDataString(Context.Request.QueryString.ToString())}")'">
+
+                        <td class="align-middle text-nowrap">
+                            @r.StartTime.ToShortTimeString()
+                        </td>
+                        <td class="align-middle">
+                            @r.Guests
+                        </td>
+                        <td class="align-middle text-nowrap">
+                            @r.Customer.FullName
+                        </td>
+                        <td class="align-middle text-nowrap">
+                            <a asp-action="Index" asp-controller="ReservationTable"
+                               asp-route-date="@r.StartTime.ToString("yyyy-MM-dd")"
+                               asp-route-sittingId="@r.SittingId"
+                               asp-route-reservationId="@r.Id"
+                               asp-route-returnUrl="@(returnUrl)"
+                               class="btn btn-outline-secondary text-nowrap"
+                               disabled="@(r.StartTime.Date < DateTime.Today.AddDays(7))">
+                                Assign
+                            </a>
+                        </td>
+                        <td class="align-middle text-nowrap">
+                            @r.Status.Description
+                        </td>
+                        <td class="align-middle text-nowrap">
+                            @switch (r.StatusId)
+                            {
+                                case 1:
+                                    {
+                                        <a class="btn btn-success" asp-action="Confirm" asp-route-id="@r.Id" asp-route-returnUrl="@(returnUrl)">Confirm</a>
+                                    }
+                                    break;
+                                case 2:
+                                    {
+                                        <a class="btn btn-warning" asp-action="Seat" asp-route-id="@r.Id" asp-route-returnUrl="@(returnUrl)">Seat</a>
+                                        <a class="btn btn-danger" asp-action="Cancel" asp-route-id="@r.Id" asp-route-returnUrl="@(returnUrl)">Cancel</a>
+                                    }
+                                    break;
+                                case 4:
+                                    {
+                                        <a class="btn btn-success" asp-action="Complete" asp-route-id="@r.Id" asp-route-returnUrl="@(returnUrl)">Complete</a>
+
+                                    }
+                                    break;
+                                case 5:
+                                    {
+                                        <p>N/A</p>
+
+                                    }
+                                    break;
+
+                            }
+                        </td>
+                        <td class="align-middle">
+                            @if (!string.IsNullOrEmpty(r.Notes))
+                            {
+                                <strong>Notes</strong>
+                            }
+                            @if (r.ActionRequired)
+                            {
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M9.05.435c-.58-.58-1.52-.58-2.1 0L.436 6.95c-.58.58-.58 1.519 0 2.098l6.516 6.516c.58.58 1.519.58 2.098 0l6.516-6.516c.58-.58.58-1.519 0-2.098L9.05.435zM8 4c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"></path>
+                                </svg>
+                            }
+                        </td>
+                    </tr>
+                }
+                @foreach (var area in Model.Areas)
+                {
+                    <tr class="bg-dark">
+                        <td colspan="7"><strong>@area.Name</strong></td>
+                    </tr>
+                    @foreach (var r in Model.Reservations.Where(r => r.ReservationTables.Any(rt => rt.Table.AreaId == area.Id)))
+                    {
+                        <tr class="clickable-row" onclick="window.location='@($"/Admin/Reservation/Details?id={r.Id}&returnUrl={Context.Request.Path.ToString() + Uri.EscapeDataString(Context.Request.QueryString.ToString())}")'">
+                            <td class="align-middle text-nowrap">
+                                @r.StartTime.ToShortTimeString()
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                @r.Guests
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                @r.Customer.FullName
+                            </td>
+                            <td class="align-middle">
+                                <a asp-action="Index" asp-controller="ReservationTable"
+                                   asp-route-date="@r.StartTime.ToString("yyyy-MM-dd")"
+                                   asp-route-sittingId="@r.SittingId"
+                                   asp-route-reservationId="@r.Id"
+                                   asp-route-returnUrl="@(returnUrl)"
+                                   class="btn btn-outline-primary text-nowrap">
+                                    @string.Join(", ", r.ReservationTables.Select(rt => rt.Table.Name).ToArray())
+                                </a>
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                @r.Status.Description
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                @switch (r.StatusId)
+                                {
+                                    case 1:
+                                        {
+                                            <a class="btn btn-success" asp-action="Confirm" asp-route-id="@r.Id" asp-route-returnUrl="@(returnUrl)">Confirm</a>
+                                        }
+                                        break;
+                                    case 2:
+                                        {
+                                            <a class="btn btn-warning" asp-action="Seat" asp-route-id="@r.Id" asp-route-returnUrl="@(returnUrl)">Seat</a>
+                                            <a class="btn btn-danger" asp-action="Cancel" asp-route-id="@r.Id" asp-route-returnUrl="@(returnUrl)">Cancel</a>
+                                        }
+                                        break;
+                                    case 4:
+                                        {
+                                            <a class="btn btn-success" asp-action="Complete" asp-route-id="@r.Id" asp-route-returnUrl="@(returnUrl)">Complete</a>
+
+                                        }
+                                        break;
+                                    case 5:
+                                        {
+                                            <p>N/A</p>
+
+                                        }
+                                        break;
+
+                                }
+                            </td>
+                            <td class="align-middle">
+                                @if (!string.IsNullOrEmpty(r.Notes))
+                                {
+                                    <strong>Notes</strong>
+                                }
+                                @if (r.ActionRequired)
+                                {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M9.05.435c-.58-.58-1.52-.58-2.1 0L.436 6.95c-.58.58-.58 1.519 0 2.098l6.516 6.516c.58.58 1.519.58 2.098 0l6.516-6.516c.58-.58.58-1.519 0-2.098L9.05.435zM8 4c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"></path>
+                                    </svg>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+
+        </table>
+    </div>
+}
+
+@section Scripts
+{
+    <script src="~/js/admin.reservation.index.js"></script>
+}

@@ -1,0 +1,79 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Account.Index
+
+<h1>Manage Staff</h1>
+
+<div class="my-3">
+    <a class="btn btn-primary" asp-action="Create">Add New Staff Member</a>
+</div>
+
+<div class="row mb-2">
+    <div class="col">
+        <h2>Managers</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var manager in Model.Managers)
+                    {
+                        <tr>
+                            <td class="align-middle text-nowrap">@manager.FullName</td>
+                            <td class="align-middle text-nowrap">@manager.Email</td>
+                            <td class="align-middle text-nowrap">@manager.Phone</td>
+                            <td class="align-middle text-nowrap">
+                                @if (manager.Email != User.Identity.Name)
+                                {
+                                    <form asp-action="RevokeManagerAccess" method="post">
+                                        <button class="btn btn-primary">Revoke Manager Access</button>
+                                        <input type="hidden" name="userId" value="@manager.UserId" />
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row mb-2">
+    <div class="col">
+        <h2>Staff</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var staffMember in Model.Staff)
+                    {
+                        <tr>
+                            <td class="align-middle text-nowrap">@staffMember.FullName</td>
+                            <td class="align-middle text-nowrap">@staffMember.Email</td>
+                            <td class="align-middle text-nowrap">@staffMember.Phone</td>
+                            <td class="align-middle text-nowrap">
+                                <form asp-action="GrantManagerAccess" method="post">
+                                    <button class="btn btn-primary">Grant Manager Access</button>
+                                    <input type="hidden" name="userId" value="@staffMember.UserId" />
+                                </form>
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

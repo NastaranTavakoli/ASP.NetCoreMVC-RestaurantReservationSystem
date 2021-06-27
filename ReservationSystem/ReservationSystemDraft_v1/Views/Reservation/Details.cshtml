@@ -1,0 +1,90 @@
+﻿@model ReservationSystemDraft_v1.Models.Reservation.Details
+
+@{
+    ViewData["Title"] = "Reservation Details";
+}
+<h1>@ViewData["Title"]</h1>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr><th>Restaurant</th><th>Guests</th><th>Date</th><th>Time</th><th></th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="align-middle text-nowrap">@Model.Restaurant.Name</td>
+                <td class="align-middle text-nowrap">@Model.Guests</td>
+                <td class="align-middle text-nowrap">@Model.StartTime.ToString("dddd, dd MMMM yyyy")</td>
+                <td class="align-middle text-nowrap">@Model.StartTime.ToString("hh:mm tt")</td>
+                <td class="align-middle text-nowrap"><a asp-action="SelectDateTime" asp-route-guests="@Model.Guests" asp-route-restaurantId="@Model.RestaurantId">Select Another Date</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<div class="row">
+    <div class="col-md">
+        <h3>Customer Information</h3>
+        @if (!User.IsInRole("Member"))
+        {
+            <div>
+                <p>Existing users <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">login here.</a></p>
+                <p>
+                    Don't have an account? <a asp-area="Identity" asp-page="/Account/Register" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">Register as a member</a> to be able to view all your upcoming and past
+                    and upcoming reservations and request changes online.
+                </p>
+            </div>
+            <hr />
+            <h4>Continue as guest.</h4>
+        }
+        else
+        {
+            <div>
+                <p>OK, let's confirm your details for the reservation.</p>
+            </div>
+        }
+        <form asp-action="Confirm">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="FirstName"></label>
+                <input class="form-control" asp-for="FirstName" />
+                <span asp-validation-for="FirstName" class="text-danger">*</span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName"></label>
+                <input class="form-control" asp-for="LastName" />
+                <span asp-validation-for="LastName" class="text-danger">*</span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input class="form-control" asp-for="Email" />
+                <span asp-validation-for="Email" class="text-danger">*</span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone"></label>
+                <input class="form-control" asp-for="Phone" />
+                <span asp-validation-for="Phone" class="text-danger">*</span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Notes"></label>
+                <input class="form-control" asp-for="Notes" />
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary" type="submit">Confirm</button>
+                <input type="hidden" asp-for="Guests" />
+                <input type="hidden" asp-for="RestaurantId" />
+                <input type="hidden" asp-for="StartTime" />
+                <input type="hidden" asp-for="SittingId" />
+            </div>
+        </form>
+    </div>
+    <div class="col-md">
+        <h3>What you wanna know before you confirm...</h3>
+        <section>
+            <p>We may contact you a few days before the reservation to inform you that the seat is reserved for you. Please make sure that your phone number or email is up to date.</p>
+            <p>The default duration of the reservation is @Model.Duration minutes. If you'd like shorter or longer time, please let us know in the form.</p>
+            <p>If you can't see availability for your chosen date and time, please contact us directly on @Model.Restaurant.Email or @Model.Restaurant.Phone.</p>
+            <p>Please call us if you are running later than your reservation time.</p>
+        </section>
+    </div>
+</div>

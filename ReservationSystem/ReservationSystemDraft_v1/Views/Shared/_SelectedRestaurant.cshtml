@@ -1,0 +1,37 @@
+﻿@model Restaurant
+
+<div class="mb-4" 
+     style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.3) 100%), url( @(Model.Photos.Any() ? Model.Photos.First().FileName : Url.Content("Uploads/Default/2ec96de6-a3e0-4d17-aec1-208e6c03cfd3.png")) );
+        background-size: 100%;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 300px;
+        z-index: -1;
+">
+</div>
+        <div class="row align-items-center mb-4" style="height: 240px;">
+            <div class="col">
+                <h1 class="font-weight-bolder text-light text-center">@Model.Name</h1>
+            </div>
+        </div>
+
+<div class="table-responsive mb-3">
+    <table class="table table-striped">
+        <thead>
+            <tr><th>Restaurant</th><th>Address</th><th>Phone</th><th>Email</th><th></th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="align-middle">@Model.Name</td>
+                <td class="align-middle">@Model.Address</td>
+                <td class="align-middle">@Model.Phone</td>
+                <td class="align-middle">@Model.Email</td>
+                <td class="align-middle">
+                    <a asp-controller="Home" asp-action="Index" asp-route-restaurantId="@Model.Id">Select Another Restaurant</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

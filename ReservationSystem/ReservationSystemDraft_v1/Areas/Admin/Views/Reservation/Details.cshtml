@@ -1,0 +1,107 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Reservation.Edit
+
+<partial name="_ReservationNavPartial" />
+
+<div class="row align-items-center">
+    <div class="col">
+        <h2>Customer Details</h2>
+    </div>
+    <div class="col-auto text-right">
+        <a class="btn btn-primary" href="@ViewBag.ReturnUrl">
+            Back
+        </a>
+    </div>
+</div>
+<hr />
+
+<form asp-action="EditTime">
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="form-group">
+                <label asp-for="Customer.FirstName">First Name</label>
+                <input class="form-control" asp-for="Customer.FirstName" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Customer.LastName">Last Name</label>
+                <input class="form-control" asp-for="Customer.LastName" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Customer.Phone"></label>
+                <input class="form-control" asp-for="Customer.Phone" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Customer.Email"></label>
+                <input class="form-control" asp-for="Customer.Email" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Notes"></label>
+                <textarea class="form-control" asp-for="Notes"></textarea>
+            </div>
+
+            <div class="form-row justify-content-between">
+                <div class="col mb-2">
+
+                    @switch (Model.StatusId)
+                    {
+                        case 1:
+                            {
+                                <a class="btn btn-danger" asp-action="Cancel" asp-route-id="@Model.Id" asp-route-returnUrl="@ViewBag.ReturnUrl">Cancel reservation</a>
+                                <a class="btn btn-success" asp-action="Confirm" asp-route-id="@Model.Id" asp-route-returnUrl="@ViewBag.ReturnUrl">Confirm reservation</a>
+                            }
+                            break;
+                        case 2:
+                            {
+                                <a class="btn btn-danger" asp-action="Cancel" asp-route-id="@Model.Id" asp-route-returnUrl="@ViewBag.ReturnUrl">Cancel reservation</a>
+                                <a class="btn btn-primary" asp-controller="ReservationTable" asp-action="SelectTables" asp-route-reservationId="@Model.Id" asp-route-returnUrl="@ViewBag.ReturnUrl">Tables</a>
+                            }
+                            break;
+                        case 4:
+                            {
+                                <a class="btn btn-success" asp-action="Complete" asp-route-id="@Model.Id" asp-route-returnUrl="@ViewBag.ReturnUrl">Complete</a>
+
+                            }
+                            break;
+                    }
+                </div>
+                <div class="mb-2 mr-4">
+                    <button id="saveCustomerChangesButton" type="submit" disabled class="btn btn-success disabled" asp-action="Update">Save Changes</button>                    
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mh-100">
+            <div class="form-group">
+                <label asp-for="StartTime"></label>
+                <input readonly class="form-control" asp-for="OldStartTime" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Duration"></label>
+                <input readonly class="form-control" asp-for="OldDuration" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Guests"></label>
+                <input readonly class="form-control" asp-for="OldGuests" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-warning">Edit Reservation</button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <input type="hidden" asp-for="Id" />
+    <input type="date" asp-for="Date" hidden />
+    <input type="time" asp-for="StartTime" hidden />
+    <input type="hidden" asp-for="Duration" />
+    <input type="hidden" asp-for="Guests" />
+    <input type="hidden" asp-for="SittingId" />
+    <input type="hidden" asp-for="OldSittingId" />
+    <input type="hidden" asp-for="OldSittingTypeId" />
+    <input type="hidden" asp-for="StatusId" />
+    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+</form>
+
+@section Scripts {
+    <script src="~/js/admin.reservation.details.js"></script>
+} 

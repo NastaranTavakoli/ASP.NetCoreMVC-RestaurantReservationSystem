@@ -1,0 +1,61 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Sitting.ViewByDate
+
+@{
+    string returnUrl = Context.Request.Path.ToString() + Context.Request.QueryString.ToString();
+}
+
+<div class="row my-2">
+    <div class="col">
+        <h1>Sittings</h1>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col">
+        <h2>@Model.Date.ToLongDateString()</h2>
+    </div>
+</div>
+
+<div class="table-responsive mb-3">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Reservations</th>
+                <th>Capacity</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sitting in Model.Sittings)
+            {
+                var guests = sitting.Reservations.Sum(r => r.Guests);
+                var percentageOfCapacity = Math.Round(sitting.Reservations.Sum(r => r.Guests / (double)sitting.Capacity * new TimeSpan(0, r.Duration, 0) / (sitting.EndTime - sitting.StartTime) * 100));
+                <tr>
+                    <td class="align-middle text-nowrap">@sitting.SittingType.Description</td>
+                    <td class="align-middle text-nowrap">@sitting.StartTime.ToShortTimeString()</td>
+                    <td class="align-middle text-nowrap">@sitting.EndTime.ToShortTimeString()</td>
+                    <td class="align-middle text-nowrap">@sitting.Reservations.Count (@guests pax)</td>
+                    <td class="align-middle text-nowrap">@percentageOfCapacity%</td>
+                    <td class="align-middle text-nowrap">
+                        <a class="btn btn-primary mr-2" asp-action="Details" asp-route-sittingId="@sitting.Id" asp-route-returnUrl="@returnUrl">View</a>
+                        @if (sitting.IsClosedForBooking)
+                        {
+                            <a class="btn btn-success" asp-action="OpenForBookings" asp-route-id="@sitting.Id" asp-route-returnUrl="@returnUrl">Open Bookings</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-danger" asp-action="CloseForBookings" asp-route-id="@sitting.Id" asp-route-returnUrl="@returnUrl">Close Bookings</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="row">
+    <div class="col">
+        <a class="btn btn-primary" asp-action="Index">Back</a>
+    </div>
+</div>

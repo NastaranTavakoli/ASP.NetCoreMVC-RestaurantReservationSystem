@@ -1,0 +1,159 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Sitting.Details
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<div class="row justify-content-between align-items-center">
+    <div class="col">
+        <h1>@Model.SittingType.Description</h1>
+    </div>
+    <div class="col text-right">
+        <a class="btn btn-primary" href="@ViewBag.ReturnUrl">Back</a>
+    </div>
+</div>
+<div class="row my-3 justify-content-between">
+    <div class="col-5">
+        <h3>@Model.StartTime.Date.ToShortDateString()</h3>
+    </div>
+    <div class="col-7">
+        <h3>@Model.StartTime.ToShortTimeString() - @Model.EndTime.ToShortTimeString()</h3>
+    </div>
+</div>
+@if (Model.SittingTemplate != null)
+{
+    <div class="row">
+        <div class="col">
+            <p class="alert-info my-3 p-3 rounded">This sitting is part of a scheduled block: @Model.SittingTemplate.Name</p>
+        </div>
+    </div>
+}
+<hr />
+<div class="row mb-3">
+    <div class="col">
+        <h2>Sitting Details</h2>
+    </div>
+</div>
+<form asp-action="EditSitting" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-row">
+        <div class="col form-group">
+            <label asp-for="StartTime"></label>
+            <input class="form-control" asp-for="StartTime" asp-format="{0:dd/MM/yyyy HH:mm}" />
+            <span class="text-danger" asp-validation-for="StartTime"></span>
+        </div>
+        <div class="col form-group">
+            <label asp-for="EndTime"></label>
+            <input class="form-control" asp-for="EndTime" asp-format="{0:dd/MM/yyyy HH:mm}" />
+            <span class="text-danger" asp-validation-for="EndTime"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col form-group">
+            <label asp-for="Increment"></label>
+            <input class="form-control" asp-for="Increment" />
+            <span class="text-danger" asp-validation-for="Increment"></span>
+        </div>
+        <div class="col form-group">
+            <label asp-for="DefaultReservationDuration"></label>
+            <input class="form-control" asp-for="DefaultReservationDuration" />
+            <span class="text-danger" asp-validation-for="DefaultReservationDuration"></span>
+        </div>
+        <div class="col form-group">
+            <label asp-for="Capacity"></label>
+            <input class="form-control" asp-for="Capacity" />
+            <span class="text-danger" asp-validation-for="Capacity"></span>
+        </div>
+    </div>
+    <div class="custom-control custom-checkbox my-3">
+        <input class="custom-control-input" asp-for="IsClosedForBooking" type="checkbox" />
+        <label class="custom-control-label" asp-for="IsClosedForBooking"></label>
+    </div>
+    <button class="btn btn-primary mb-3" type="submit">Save Changes</button>
+    <input type="hidden" asp-for="RestaurantId" />
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="SittingTypeId" />
+    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+</form>
+<hr />
+<h2 class="mb-3">Reservations</h2>
+@{
+    var guests = Model.Reservations.Sum(r => r.Guests);
+}
+<div class="row my-3">
+    <div class="col col-sm-2">Guests:&nbsp; <strong>@guests</strong></div>
+    <div class="col col-sm-2">At Capacity:&nbsp; <strong>@Model.AtCapacity%</strong></div>
+</div>
+@if (Model.TotalReservations > 10)
+{
+    <div class="row justify-content-center my-3">
+        <div class="mx-1">
+            <a class="btn btn-outline-primary @(Model.PageNumber > 1 ? "" : "disabled")"
+               asp-action="@(Model.PageNumber > 1 ? "Details" : "")"
+               asp-route-sittingId="@Model.Id"
+               asp-route-pageNumber="@(Model.PageNumber - 1)"
+               asp-route-returnUrl="@ViewBag.ReturnUrl">
+                &laquo; Prev
+            </a>
+        </div>
+
+        @for (int i = 1; i <= Model.TotalReservations / 10 + 1; i++)
+        {
+            <div class="mx-1">
+                <a class="btn @(Model.PageNumber == i ? "btn-primary" : "btn-outline-primary")"
+                   asp-action="Details"
+                   asp-route-sittingId="@Model.Id"
+                   asp-route-pageNumber="@i"
+                   asp-route-returnUrl="@ViewBag.ReturnUrl">
+                    @i
+                </a>
+            </div>
+        }
+
+        <div class="mx-1">
+            <a class="btn btn-outline-primary @(Model.PageNumber < Model.TotalReservations / 10 + 1 ? "" : "disabled")"
+               asp-action="@(Model.PageNumber < Model.TotalReservations / 10 + 1 ? "Details" : "")"
+               asp-route-sittingId="@Model.Id"
+               asp-route-pageNumber="@(Model.PageNumber + 1)"
+               asp-route-returnUrl="@ViewBag.ReturnUrl">
+                Next &raquo;
+            </a>
+        </div>
+
+    </div>
+}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead><tr><th>Guests</th><th>Start Time</th><th>End Time</th><th>Status</th><th>Options</th></tr></thead>
+        <tbody>
+            @foreach (var r in Model.Reservations.OrderBy(r => r.StartTime))
+            {
+                <tr>
+                    <td class="align-middle text-nowrap">@r.Guests</td>
+                    <td class="align-middle text-nowrap">@r.StartTime.ToShortTimeString()</td>
+                    <td class="align-middle text-nowrap">@r.StartTime.AddMinutes(r.Duration).ToShortTimeString()</td>
+                    <td class="align-middle text-nowrap">@Model.GetStatus(r.StatusId)</td>
+                    <td class="align-middle text-nowrap">
+                        <a class="btn btn-primary"
+                           asp-action="Details"
+                           asp-controller="Reservation"
+                           asp-area="Admin"
+                           asp-route-id="@r.Id"
+                           asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+                            View
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@if (!Model.Reservations.Any(r => r.StatusId != 3))
+{
+    <div class="row mt-3">
+        <div class="col">
+            <a class="btn btn-danger" asp-action="ConfirmCancel" asp-route-sittingId="@Model.Id">Cancel Sitting</a>
+        </div>
+    </div>
+}
+

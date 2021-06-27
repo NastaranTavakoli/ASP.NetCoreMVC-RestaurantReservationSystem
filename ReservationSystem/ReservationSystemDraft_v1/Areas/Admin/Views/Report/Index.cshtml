@@ -1,0 +1,124 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Report.Index
+
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="nav-link active" asp-action="Index">Weekly</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-action="DailyReview">Daily</a>
+    </li>
+</ul>
+
+<div class="container">
+    <div class="row">
+        <h3 class="col-12">Weekly Review</h3>
+
+        @if (Model.Sittings.Count != 0)
+        {
+            <div class="col-2 text-center">
+                <a id="backBtn" class="btn btn-primary" asp-action="Index" asp-route-datetime="@Model.WeekStart.AddDays(-1).ToString("o")">&laquo;</a>
+            </div>
+            <div class="col-8 text-center">
+                <p class="lead"><b>@Model.WeekStart.ToString("dd MMM yyyy")</b> - <b>@Model.WeekEnd.ToString("dd MMM yyyy")</b></p>
+            </div>
+            <div class="col-2 text-center">
+                <a id="nextBtn" class="btn btn-primary" asp-action="Index" asp-route-datetime="@Model.WeekEnd.AddDays(1).ToString("o")">&raquo;</a>
+            </div>
+
+            <div class="col-md-3 col-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        @*[0] = total reservations booked per week, [1] = total reservations completed per week, [2] = total reservations canceled per week, [3] = total upcoming reservations of the week*@
+                        <h4>@Model.ReservationCountListByState[0]</h4>
+                        <p>Total Booked</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4>@Model.ReservationCountListByState[1]</h4>
+                        <p>Total Completed</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4>@Model.ReservationCountListByState[2]</h4>
+                        <p>Total Canceled</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4>@Model.ReservationCountListByState[3]</h4>
+                        <p>Upcoming</p>
+                    </div>
+                </div>
+            </div>
+
+            @*<div class="col mt-3 mb-3 text-center">
+                @foreach (var st in Model.SittingTypes)
+                {
+                    <a asp-action="Index" asp-route-sittingTypeId="@st.Id" class="btn btn-primary">@st.Description</a>
+                }
+            </div>*@
+
+            <div class="col-12">&nbsp;</div>
+
+            <div class="col-md-7 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="col-12 mt-3">
+                            <form asp-action="Index" id="adminReportsForm">
+                                <div class="form-row">
+                                    <div asp-validation-summary="All"></div>
+                                    <div class="form-group col-md-8">
+                                        <select asp-for="SittingTypeId" asp-items="Model.SittingTypes" class="form-control" id="sittingTypeSelectList"></select>
+                                        <span asp-validation-for="SittingTypeId" class="text-danger">*</span>
+                                    </div>
+                                    <input type="hidden" asp-for="WeekStart" />
+                                    <input type="hidden" asp-for="WeekEnd" />
+                                </div>
+                            </form>
+                        </div>
+                        <canvas id="weeklyChartBySitting"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-body">
+                        <canvas id="weeklyChartBySource"></canvas>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-4 text-center">
+                <a class="btn btn-primary" asp-action="Index" asp-route-datetime="@Model.WeekStart.AddDays(-1).ToString("o")">&laquo;</a>
+            </div>
+            <div class="col-md-4 text-center">
+                <p class="lead">@Model.WeekStart.ToString("dd MMM yyyy") - @Model.WeekEnd.ToString("dd MMM yyyy")</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <a class="btn btn-primary" asp-action="Index" asp-route-datetime="@Model.WeekEnd.AddDays(1).ToString("o")">&raquo;</a>
+            </div>
+            <h4 class="col-12">No sittings are available.</h4>
+        }
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        var yValues_WeeklySeatsBookedList = @Json.Serialize(Model.WeeklySeatsBooked);
+        var yValues_WeeklyReservationsBySource = @Json.Serialize(Model.ReservationCountListBySource);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="~/js/admin.report.index.js"></script>
+} 

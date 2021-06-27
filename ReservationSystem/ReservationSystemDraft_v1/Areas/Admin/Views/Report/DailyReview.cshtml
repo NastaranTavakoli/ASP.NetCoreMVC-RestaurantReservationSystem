@@ -1,0 +1,96 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Report.DailyReview
+
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="nav-link" asp-action="Index">Weekly</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" asp-action="DailyReview">Daily</a>
+    </li>
+</ul>
+
+<div class="container">
+    <div class="row">
+        <h3 class="col-12">Daily Review</h3>
+        @if (Model.Sittings.Count != 0)
+        {
+            <div class="col-2 text-center">
+                <a class="btn btn-primary" asp-action="DailyReview" asp-route-datetime="@Model.SelectedDate.AddDays(-1).ToString("o")">&laquo;</a>
+            </div>
+            <div class="col-8 text-center">
+                <p class="lead"><b>@Model.SelectedDate.ToString("ddd, dd MMM yyyy")</b></p>
+            </div>
+            <div class="col-2 text-center">
+                <a class="btn btn-primary" asp-action="DailyReview" asp-route-datetime="@Model.SelectedDate.AddDays(1).ToString("o")">&raquo;</a>
+            </div>
+
+            <div class="col-md-3 col-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        @*[0] = total reservations booked per week, [1] = total reservations completed per week, [2] = total reservations canceled per week, [3] = total upcoming reservations of the week*@
+                        <h4>@Model.ReservationCountList[0]</h4>
+                        <p>Total Booked</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4>@Model.ReservationCountList[1]</h4>
+                        <p>Total Completed</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4>@Model.ReservationCountList[2]</h4>
+                        <p>Total Canceled</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4>@Model.ReservationCountList[3]</h4>
+                        <p>Upcoming</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 mt-3">
+                <div class="card">
+                    <div class="card-body">
+                        <canvas id="dailyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-4 text-center">
+                <a class="btn btn-primary" asp-action="DailyReview" asp-route-datetime="@Model.SelectedDate.AddDays(-1).ToString("o")">&laquo;</a>
+            </div>
+            <div class="col-md-4 text-center">
+                <p class="lead"><b>@Model.SelectedDate.ToString("ddd, dd MMM yyyy")</b></p>
+            </div>
+            <div class="col-md-4 text-center">
+                <a class="btn btn-primary" asp-action="DailyReview" asp-route-datetime="@Model.SelectedDate.AddDays(1).ToString("o")">&raquo;</a>
+            </div>
+            <h4 class="col-12">No sittings are available.</h4>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var xAxes_TimeSlots = @Json.Serialize(Model.TimeSlots);
+        var yValues_TotalSeats = @Json.Serialize(Model.TotalSeats);
+        var yValues_SeatsCompleted = @Json.Serialize(Model.SeatsCompleted);
+        var yValues_SeatsCanceled = @Json.Serialize(Model.SeatsCanceled);
+        var yValues_Capacities = @Json.Serialize(Model.CapacityList);
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="~/js/admin.report.dailyReview.js"></script>
+} 

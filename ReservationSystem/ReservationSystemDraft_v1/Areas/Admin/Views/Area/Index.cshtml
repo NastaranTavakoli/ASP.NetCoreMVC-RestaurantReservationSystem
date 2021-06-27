@@ -1,0 +1,89 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Area.Index
+<div class="row">
+    <div class="col-6">
+        <h3>Area</h3>
+    </div>
+    <div class="col-6 text-md-right">
+        <a asp-action="Create" class="btn btn-primary">+ Add New Area</a>
+    </div>
+    <hr class="mt-3"/>
+
+    @if (Model.Areas.Count == 0)
+    {
+        <div class="col-12">
+            <p class="alert alert-info">Currently there is no area registered in the restaurant. Add a new area first.</p>
+        </div>
+
+    }
+    else
+    {
+        <div class="col-12 mt-4 mb-4">
+            <form asp-action="Index" method="post">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label asp-for="Capacity" class="control-label"></label>
+                        <input asp-for="Capacity" class="form-control" />
+                        <span asp-validation-for="Capacity" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label asp-for="AreaId" class="control-label"></label>
+                        <select asp-for="AreaId" asp-items="Model.AreaOptions" class="form-control">
+                            <option value="" disabled selected>Please select an area</option>
+                        </select>
+                        <span asp-validation-for="AreaId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-3 text-md-right">
+                        <label>&nbsp;</label><br />
+                        <input type="submit" value="+ Add New Table" class="btn btn-primary" />
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        @foreach (var area in Model.Areas)
+        {
+            <div class="col-7">
+                <p class="lead"><b>@area.Name</b> area</p>
+            </div>
+            <div class="col-5 text-right">
+                <a class="btn btn-info" asp-action="Edit" asp-route-id="@area.Id">Rename</a>
+                <a class="btn btn-danger" data-toggle="tooltip" title="Delete Area" asp-action="Delete" asp-route-id="@area.Id">x</a>
+            </div>
+            <div class="col-12">
+                @if (area.Tables.Count() == 0)
+                {
+                    <p class="col-12 alert alert-info">No Tables</p>
+                }
+                else
+                {
+                    <table class="table table-active table-sm col-12">
+                        <thead>
+                            <tr><th>Name</th><th>Capacity</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in area.Tables)
+                            {
+                                <tr>
+                                    <td>@t.Name</td>
+                                    <td>@t.Capacity</td>
+                                    <td class="text-right">
+                                        <a class="btn btn-warning" asp-action="EditTable" asp-route-id="@t.Id">Edit</a>
+                                        <a class="btn btn-danger" data-toggle="tooltip" title="Delete Table" asp-action="DeleteTable" asp-route-id="@t.Id">x</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        }
+    }
+</div>
+
+
+

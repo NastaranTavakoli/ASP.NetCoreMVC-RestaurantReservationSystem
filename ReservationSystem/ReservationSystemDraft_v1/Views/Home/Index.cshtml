@@ -1,0 +1,133 @@
+﻿@model ReservationSystemDraft_v1.Models.Home.Index
+
+
+<form id="indexForm" method="post" asp-action="Index">
+    <div class="mb-5"
+         style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%,rgba(0,0,0,0.3) 100%), url('@Url.Content("~/Resources/Restaurant-Booking-Service-header.jpg")');
+                background-size: 100%;
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                width: 100%;
+                height: 420px;
+                z-index: -1;
+    ">
+    </div>
+    <div class="container mb-4" style="height: 300px">
+        <div class="row h-100 align-items-center">
+            <div class="col">
+                <h1 class="font-weight-bolder text-light text-center mb-4 mt-0">Pick the time, we'll hold your place</h1>
+                <div class="form-row d-flex justify-content-center">
+                    <div class="form-group col-6 col-md-auto ">
+                        <input class="form-control" asp-for="Date" min="@DateTime.Now.AddHours(1).Date.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="form-group col-6 col-md-auto">
+                        <input class="form-control" asp-for="Time" />
+                    </div>
+                    <div class="form-group col-3 col-md-2 col-lg-1">
+                        <input class="form-control" asp-for="Guests" />
+                    </div>
+                    <div class="form-group col-9 col-md-auto">
+                        <input placeholder="Location or Name" class="form-control" asp-for="SearchString" />
+                    </div>
+                    <button type="submit" class="btn btn-light mb-3 col-auto">Let's Go</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-between mb-0">
+        <div class="col col-lg-9 col-sm-8 mt-5">
+            <h3>Book Now</h3>
+            <h5 class="mt-3">Available Restaurants</h5>
+        </div>
+        <div class="form-group col col-sm-4 col-lg-3  mt-5 mb-0">
+            <label asp-for="OrderOptionId"></label>
+            <select id="orderSelector" class="form-control" asp-for="OrderOptionId" asp-items="@Model.OrderOptions">
+            </select>
+        </div>
+    </div>
+
+
+</form>
+
+<hr />
+@if (Model.AvailableRestaurants.Any())
+{
+    <div class="row">
+
+        @foreach (var item in Model.AvailableRestaurants)
+        {
+            <div class="col-12 mb-4 col-md-4 col-sm-6 col-xl-3">
+                <div class="card h-100 box-shadow">
+                    <a class="text-decoration-none text-reset" asp-controller="Reservation" asp-action="SelectDateTime" asp-route-restaurantId="@item.Id" asp-route-selectedDate="@Model.Date.ToShortDateString()">
+                        @if (!item.Photos.Any())
+                        {
+                            <img class="card-img-top" src="@Url.Content("Uploads/Default/2ec96de6-a3e0-4d17-aec1-208e6c03cfd3.png")" alt="Restaurant image">
+                        }
+                        else
+                        {
+                            <img class="card-img-top" src="@item.Photos.First().FileName" alt="Restaurant image">
+                        }
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text mb-2"><small class="text-muted">@item.Address</small></p>
+                    </div>
+                    <div class="card-footer">
+                        <a class="btn btn-primary w-100" asp-controller="Reservation" asp-action="SelectDateTime" asp-route-restaurantId="@item.Id" asp-route-selectedDate="@Model.Date.ToShortDateString()">Make a reservation</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Sorry! no available restaurants for your @Model.Date.ToShortDateString()</p>
+}
+
+
+
+
+<br />
+<br />
+<div class="d-flex justify-content-between">
+    <h5>Latest Added</h5>
+    <a asp-controller="Reservation" asp-action="Index">View All</a>
+</div>
+<hr />
+<div class="row">
+
+    @foreach (var item in Model.LatestAddedRestaurants)
+    {
+        <div class="col-12 mb-4 col-md-4 col-sm-6 col-xl-3">
+            <div class="card h-100 box-shadow">
+                <a class="text-decoration-none text-reset" asp-controller="Reservation" asp-action="SelectDateTime" asp-route-restaurantId="@item.Id" asp-route-selectedDate="@Model.Date.ToShortDateString()">
+                    @if (!item.Photos.Any())
+                    {
+                        <img class="card-img-top" src="@Url.Content("Uploads/Default/2ec96de6-a3e0-4d17-aec1-208e6c03cfd3.png")" alt="Restaurant image">
+                    }
+                    else
+                    {
+                        <img class="card-img-top" src="@item.Photos.First().FileName" alt="Restaurant image">
+                    }
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title">@item.Name</h5>
+                    <p class="card-text mb-2"><small class="text-muted">@item.Address</small></p>
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-primary w-100" asp-controller="Reservation" asp-action="SelectDateTime" asp-route-restaurantId="@item.Id" asp-route-selectedDate="@Model.Date.ToShortDateString()">Make a reservation</a>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+
+
+@section Scripts{
+    <script src="~/js/home.index.js"></script>
+}
+

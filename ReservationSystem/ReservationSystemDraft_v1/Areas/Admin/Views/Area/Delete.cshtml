@@ -1,0 +1,36 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Area.Details
+
+
+<h3>Delete @Model.Name area?</h3>
+<div>
+    @if (Model.Tables.Count > 0)
+    {
+        <p>Tables in the area will also be deleted.</p>
+        <table class="table table-active">
+            <thead>
+                <tr><th>Table Name</th><th>Seats</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Model.Tables)
+                {
+                    <tr>
+                        <td>@t.Name</td>
+                        <td>@t.Capacity</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <form asp-action="Delete">
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Name" />
+        <input type="hidden" asp-for="RestaurantId" />
+    </form>
+</div>
+
+<br />
+<div>
+    <a asp-action="Index">Back</a>
+</div>

@@ -1,0 +1,84 @@
+﻿@model IReadOnlyCollection<Reservation>
+<div class="row align-items-center">
+    <div class="col-8 col-sm-7">
+        <h3>All Reservations</h3>
+    </div>
+    <div class=" col-4 col-sm-5 text-sm-right">
+        <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="Index">Book Now!</a>
+    </div>
+</div>
+<div class="row mt-5">
+    <div class="col">
+        <p class="lead">Upcoming Reservations</p>
+        @{
+            var futureReservations = Model.Where(m => m.StartTime >= DateTime.Now).ToList();
+            if (futureReservations.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr><th>Date</th><th>Venue</th><th>Time</th><th>State</th><th>More Details...</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in futureReservations)
+                            {
+                                <tr>
+                                    <td class="align-middle text-nowrap">@r.StartTime.ToShortDateString()</td>
+                                    <td class="align-middle text-nowrap">@r.Sitting.Restaurant.Name</td>
+                                    <td class="align-middle text-nowrap">@r.StartTime.ToString("hh:mm tt")</td>
+                                    <td class="align-middle text-nowrap">@r.Status.Description</td>
+                                    <td class="align-middle text-nowrap">
+                                        <a class="btn btn-primary" asp-action="Details" asp-route-id="@r.Id">View Details</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>No upcoming reservations.</p>
+            }
+        }
+    </div>
+</div>
+<div class="row mt-5">
+    <div class="col">
+        <p class="lead">Past Reservations</p>
+        @{
+            var pastReservations = Model.Where(m => m.StartTime < DateTime.Now).ToList();
+            if (pastReservations.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr><th>Date</th><th>Venue</th><th>Time</th><th>State</th><th>More Details...</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in pastReservations)
+                            {
+                                <tr>
+                                    <td class="align-middle text-nowrap">@r.StartTime.ToShortDateString()</td>
+                                    <td class="align-middle text-nowrap">@r.Sitting.Restaurant.Name</td>
+                                    <td class="align-middle text-nowrap">@r.StartTime.ToString("hh:mm tt")</td>
+                                    <td class="align-middle text-nowrap">@r.Status.Description</td>
+                                    <td class="text-nowrap">
+                                        <a class="btn btn-primary" asp-action="Details" asp-route-id="@r.Id">View Details</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>No reservations in the past.</p>
+            }
+        }
+    </div>
+</div>
+
+
+

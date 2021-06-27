@@ -1,0 +1,29 @@
+﻿@model ReservationSystemDraft_v1.Data.Sitting
+
+
+@if (Model.Reservations.Any(r => r.StatusId != 3))
+{
+    // If sitting has any reservations that aren't cancelled
+    <div class="row mt-5">
+        <div class="col">
+            <p>This sitting has active reservations. It cannot be cancelled.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row mt-5">
+        <div class="col">
+            <p>Are you sure you want to cancel the @Model.SittingType.Description sitting on @Model.StartTime.ToLongDateString()?</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a class="btn btn-primary mr-2" asp-action="Index">Back</a>        
+            <form asp-action="Cancel" method="post" class="d-inline">
+                <button class="btn btn-danger" type="submit">Confirm</button>
+                <input type="hidden" asp-for="Id" />
+            </form>
+        </div>
+    </div>
+}

@@ -1,0 +1,129 @@
+﻿@import "../lib/bootstrap/dist/scss/_functions.scss";
+@import "../lib/bootstrap/dist/scss/_variables.scss";
+@import "../lib/bootstrap/dist/scss/_mixins.scss";
+
+// scss-docs-start gray-color-variables
+$white: #fff;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$black: #000;
+// scss-docs-end gray-color-variables
+
+// fusv-disable
+// scss-docs-start gray-colors-map
+$grays: ( "100": $gray-100, "200": $gray-200, "300": $gray-300, "400": $gray-400, "500": $gray-500, "600": $gray-600, "700": $gray-700, "800": $gray-800, "900": $gray-900 );
+// scss-docs-end gray-colors-map
+// fusv-enable
+
+// scss-docs-start color-variables
+$blue: #0d6efd;
+$indigo: #6610f2;
+$purple: #6f42c1;
+$pink: #d63384;
+$red: #dc3545;
+$orange: #fd7e14;
+$yellow: #ffc107;
+$green: #198754;
+$teal: #20c997;
+$cyan: #0dcaf0;
+// scss-docs-end color-variables
+
+// scss-docs-start colors-map
+$colors: ( "blue": $blue, "indigo": $indigo, "purple": $purple, "pink": $pink, "red": $red, "orange": $orange, "yellow": $yellow, "green": $green, "teal": $teal, "cyan": $cyan, "white": $white, "gray": $gray-600, "gray-dark": $gray-800 );
+// scss-docs-end colors-map
+
+// scss-docs-start theme-color-variables
+$primary: $red-700;
+$secondary: $gray-800;
+$success: $green-400;
+$info: $cyan-600;
+$warning: $yellow-600;
+$danger: $red-400;
+$light: $gray-200;
+$dark: $gray-900;
+// scss-docs-end theme-color-variables
+
+// scss-docs-start theme-colors-map
+$theme-colors: ( "primary": $primary, "secondary": $secondary, "success": $success, "info": $info, "warning": $warning, "danger": $danger, "light": $light, "dark": $dark );
+
+$body-bg: white;
+$body-color: $gray-900;
+
+$link-color: $primary;
+$link-decoration: underline;
+$link-shade-percentage: 20%;
+$link-hover-color: shift-color($link-color, $link-shade-percentage);
+$link-hover-decoration: null;
+
+// stylelint-disable value-keyword-case
+$font-family-sans-serif: "Verdana", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+// stylelint-enable value-keyword-case
+$font-family-base: var(--#{$variable-prefix}font-sans-serif);
+$font-family-code: var(--#{$variable-prefix}font-monospace);
+
+// scss-docs-start table-variables
+$table-cell-padding-y: .5rem;
+$table-cell-padding-x: .5rem;
+$table-cell-padding-y-sm: .25rem;
+$table-cell-padding-x-sm: .25rem;
+
+$table-cell-vertical-align: top;
+
+$table-color: $body-color;
+$table-bg: transparent;
+
+$table-th-font-weight: null;
+
+$table-striped-color: $table-color;
+$table-striped-bg-factor: .05;
+$table-striped-bg: rgba($black, $table-striped-bg-factor);
+
+$table-active-color: $table-color;
+$table-active-bg-factor: .1;
+$table-active-bg: rgba($black, $table-active-bg-factor);
+
+$table-hover-color: $table-color;
+$table-hover-bg-factor: .075;
+$table-hover-bg: rgba($black, $table-hover-bg-factor);
+
+$table-border-factor: .1;
+$table-border-width: $border-width;
+$table-border-color: $border-color;
+
+$table-striped-order: odd;
+
+$table-group-separator-color: currentColor;
+
+$table-caption-color: $text-muted;
+
+$table-bg-scale: -80%;
+// scss-docs-end table-variables
+
+// scss-docs-start card-variables
+$card-spacer-y: $spacer;
+$card-spacer-x: $spacer;
+$card-title-spacer-y: $spacer / 2;
+$card-border-width: $border-width;
+$card-border-radius: $border-radius;
+$card-border-color: rgba($primary, .2);
+$card-inner-border-radius: subtract($card-border-radius, $card-border-width);
+$card-cap-padding-y: $card-spacer-y / 2;
+$card-cap-padding-x: $card-spacer-x;
+$card-cap-bg: rgba($black, .03);
+$card-cap-color: null;
+$card-height: null;
+$card-color: null;
+$card-bg: null;
+$card-img-overlay-padding: $spacer;
+$card-group-margin: $grid-gutter-width / 2;
+// scss-docs-end card-variables
+
+@import "../lib/bootstrap/dist/scss/bootstrap.scss";

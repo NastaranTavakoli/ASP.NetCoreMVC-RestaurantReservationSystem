@@ -1,0 +1,96 @@
+﻿@model ReservationSystemDraft_v1.Areas.Member.Models.Activity.Request
+<a></a>
+<h2>Reservation for @Model.RestaurantName</h2>
+<hr />
+<div class="row">
+    @if (Model.StartTime > DateTime.Now)
+    {
+        <div class="col-4">
+            <h5>Current Details</h5>
+            <div class="form-group">
+                <label asp-for="StartTime">Date and Time</label>
+                <input readonly class="form-control" asp-for="StartTime" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Duration"></label>
+                <input readonly class="form-control" asp-for="Duration" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Guests"></label>
+                <input readonly class="form-control" asp-for="Guests" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input readonly class="form-control" asp-for="Email" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone"></label>
+                <input readonly class="form-control" asp-for="Phone" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Notes"></label>
+                <textarea readonly class="form-control" asp-for="Notes"></textarea>
+            </div>
+        </div>
+
+        <form class="col-8 pr-5" asp-action="UpdateRequest">
+            <h5>New Details</h5>
+            <div class="form-group">
+                <label asp-for="StartTime"></label>
+                <input class="form-control" asp-for="StartTime" min="@DateTime.Now.AddMinutes(120)">
+            </div>
+            <div class="form-group">
+                <label asp-for="Duration"></label>
+                <input class="form-control" asp-for="Duration">
+            </div>
+            <div class="form-group">
+                <label asp-for="Guests"></label>
+                <input class="form-control" asp-for="Guests" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input class="form-control" asp-for="Email" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone"></label>
+                <input class="form-control" asp-for="Phone" />
+            </div>
+            <a type="submit" class="btn btn-secondary" asp-action="Index">Back</a>
+            <button type="submit" class="btn btn-primary">Request Update</button>
+            <button type="submit" class="btn btn-danger" asp-action="CancelRequest" asp-route-reservationId="@Model.Id">Request Cancellation</button>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Notes" />
+        </form>
+    }
+    else
+    {
+        <div class="col-12">
+            <h5>Details</h5>
+            <div class="form-group">
+                <label asp-for="StartTime">Date and Time</label>
+                <input readonly class="form-control" asp-for="StartTime" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Duration"></label>
+                <input readonly class="form-control" asp-for="Duration" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Guests"></label>
+                <input readonly class="form-control" asp-for="Guests" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input readonly class="form-control" asp-for="Email" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone"></label>
+                <input readonly class="form-control" asp-for="Phone" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Notes"></label>
+                <textarea readonly class="form-control" asp-for="Notes"></textarea>
+            </div>
+            <a type="submit" class="btn btn-secondary" asp-action="Index">Back</a>
+        </div>
+    }
+</div>

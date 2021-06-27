@@ -1,0 +1,87 @@
+﻿@page
+@model RegisterRestaurantModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container">
+    <h1>@ViewData["Title"]</h1>
+
+
+    <form asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
+        <h4>Register your business</h4>
+        <hr />
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="row">
+            <div class="col pr-5">
+                <div class="form-group">
+                    <label asp-for="Input.FirstName"></label>
+                    <input asp-for="Input.FirstName" class="form-control" />
+                    <span asp-validation-for="Input.FirstName" class="text-danger">*</span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.LastName"></label>
+                    <input asp-for="Input.LastName" class="form-control" />
+                    <span asp-validation-for="Input.LastName" class="text-danger">*</span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.AdminPhone"></label>
+                    <input asp-for="Input.AdminPhone" class="form-control" />
+                    <span asp-validation-for="Input.AdminPhone" class="text-danger">*</span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.AdminEmail"></label>
+                    <input asp-for="Input.AdminEmail" class="form-control" />
+                    <span asp-validation-for="Input.AdminEmail" class="text-danger">*</span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Password"></label>
+                    <input asp-for="Input.Password" class="form-control" />
+                    <span asp-validation-for="Input.Password" class="text-danger">*</span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.ConfirmPassword"></label>
+                    <input asp-for="Input.ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger">*</span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label asp-for="Input.RestaurantName"></label>
+                    <input asp-for="Input.RestaurantName" class="form-control" />
+                    <span asp-validation-for="Input.RestaurantName" class="text-danger">*</span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.RestaurantEmail"></label>
+                    <input asp-for="Input.RestaurantEmail" class="form-control" />
+                    <span asp-validation-for="Input.RestaurantEmail" class="text-danger">*</span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.RestaurantAddress"></label>
+                    <input asp-for="Input.RestaurantAddress" class="form-control" />
+                    <span asp-validation-for="Input.RestaurantAddress" class="text-danger">*</span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.RestaurantPhone"></label>
+                    <input asp-for="Input.RestaurantPhone" class="form-control" />
+                    <span asp-validation-for="Input.RestaurantPhone" class="text-danger">*</span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Images"></label>
+                    <input type="file" multiple asp-for="Input.Images" class="form-control-file" />
+                    <span asp-validation-for="Input.Images" class="text-danger">*</span>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Register Business</button>
+    </form>
+</div>
+
+
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

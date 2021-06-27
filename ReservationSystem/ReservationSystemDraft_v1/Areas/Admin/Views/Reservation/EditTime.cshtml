@@ -1,0 +1,165 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Reservation.Edit
+
+<partial name="_ReservationNavPartial" />
+
+<div class="row align-items-center">
+    <div class="col">
+        <h2>Reservation Details</h2>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary" asp-action="Details">
+            Back
+        </button>
+    </div>
+</div>
+<hr />
+
+
+<form id="selectTimeForm" asp-action="EditTime">
+    <div class="row">
+        <div class="col-md-8 mb-3">
+            <div class="form-group">
+                <label asp-for="Date"></label>
+                <input class="form-control" asp-for="Date" id="datePicker" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Duration"></label>
+                <select class="form-control" asp-for="Duration" asp-items="@Model.DurationOptions">
+                    <option disabled>Select Duration</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Guests"></label>
+                <input id="guestsInput" class="form-control" asp-for="Guests" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StartTime"></label>
+                <input class="form-control" asp-for="StartTime" value="@Model.StartTime.ToString("HH:mm")" />
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-primary" type="button" id="availableTimesButton" onclick="toggleShowAvailableTimes(event)" value="0">Show Available Times</button>
+            </div>
+
+            @*<div class="form-group">
+                    <label asp-for="ShowUnavailableTimeSlots"></label>
+                    <input id="displayAllCheck" asp-for="ShowUnavailableTimeSlots" type="checkbox">
+                </div>*@
+            <section id="availableTimesSection" hidden>
+                @if (!Model.Availabilities.Any())
+                {
+                    <p>No time slot was found</p>
+                }
+                else
+                {
+                    var groupedAvailabilities = Model.Availabilities.GroupBy(t => t.Sitting.Id).Select(grp => grp.ToList()).ToList();
+
+                    @foreach (var groupedAvailability in groupedAvailabilities)
+                    {
+                        @if (Model.ShowUnavailableTimeSlots)
+                        {
+                            <table class="table table-striped">
+                                <thead><tr><th>@(groupedAvailability[0].Sitting.Description)</th></tr></thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            @foreach (var availability in groupedAvailability)
+                                            {
+                                                <button type="button"
+                                                        class="@(availability.IsAvailable ? "btn-primary" : "btn-secondary") btn mb-2"
+                                                        value="@availability.StartTime.ToString("HH:mm")"
+                                                        data-sittingid="@availability.Sitting.Id"
+                                                        onclick="selectTime(event)">
+                                                    @availability.StartTime.ToString("hh:mm tt")
+                                                </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <table class="table table-striped">
+
+                                @if (groupedAvailability.Any(a => a.IsAvailable))
+                                {
+                                    <thead><tr><th>@(groupedAvailability[0].Sitting.Description)</th></tr></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+
+                                                @foreach (var availability in groupedAvailability)
+                                                {
+                                                    <button type="button"
+                                                            class="@(availability.IsAvailable ? "btn-primary" : "btn-secondary") btn mb-2"
+                                                            value="@availability.StartTime.ToString("HH:mm")"
+                                                            data-sittingid="@availability.Sitting.Id"
+                                                            onclick="selectTime(event)">
+                                                        @availability.StartTime.ToString("hh:mm tt")
+                                                    </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                }
+
+
+
+                            </table>
+                        }
+                    }
+                }
+            </section>
+
+            <button class="btn btn-secondary" asp-action="DiscardUpdate">Discard</button>
+            <button class="btn btn-success" type="submit" asp-action="Update">Save</button>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="form-group">
+                <label asp-for="Customer.FirstName"></label>
+                <input readonly class="form-control" asp-for="Customer.FirstName" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Customer.LastName"></label>
+                <input readonly class="form-control" asp-for="Customer.LastName" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Customer.Phone"></label>
+                <input readonly class="form-control" asp-for="Customer.Phone" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Customer.Email"></label>
+                <input readonly class="form-control" asp-for="Customer.Email" />
+            </div>
+            <div class="form-group">
+                <label>Current booking date and time</label>
+                <input readonly class="form-control" value="@Model.OldStartTime.ToString("dd/MM/yyyy - h:mm tt")" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Notes"></label>
+                <textarea class="form-control" asp-for="Notes"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="OldSittingId" />
+    <input type="hidden" asp-for="SittingId" />
+    <input type="hidden" asp-for="OldStartTime" />
+    <input type="hidden" asp-for="OldGuests" />
+    <input type="hidden" asp-for="OldDuration" />
+    <input type="hidden" asp-for="Customer" />
+    <input type="hidden" asp-for="StatusId" />
+    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+</form>
+
+
+
+@section Scripts{
+    <script src="~/js/admin.reservation.selectTime.js"></script>
+}

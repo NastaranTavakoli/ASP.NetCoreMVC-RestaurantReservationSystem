@@ -1,0 +1,28 @@
+﻿@model ReservationSystemDraft_v1.Data.SittingTemplate
+
+@if (Model.Sittings.Any(s => s.Reservations.Any(r => r.StatusId != 3)))
+{
+    // If sitting has any reservations that aren't cancelled
+    <div class="row mt-5">
+        <div class="col">
+            <p>At least one sitting in this schedule has active reservations. It cannot be cancelled.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row mt-5">
+        <div class="col">
+            <p>Are you sure you want to cancel all future sittings in the @Model.Name schedule?</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a class="btn btn-primary mr-2" asp-action="Index">Back</a>
+            <form class="d-inline" asp-action="CancelByType" method="post">
+                <button class="btn btn-danger" type="submit">Confirm</button>
+                <input type="hidden" asp-for="Id" />
+            </form>
+        </div>
+    </div>
+}

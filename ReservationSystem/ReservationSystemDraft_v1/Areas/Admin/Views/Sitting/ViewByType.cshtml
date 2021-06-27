@@ -1,0 +1,90 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Sitting.ViewByType
+
+@{
+    string returnUrl = Context.Request.Path.ToString() + Context.Request.QueryString.ToString();
+}
+
+<div class="row align-items-center justify-content-between">
+    <div class="col">
+        <h1>Sittings</h1>
+    </div>
+    <div class="col text-right">
+        <a class="btn btn-primary" asp-action="Index">Back</a>
+    </div>
+</div>
+<div class="row mb-2">
+    <div class="col">
+        <h2>@Model.Type</h2>
+    </div>
+</div>
+<div class="row justify-content-center mb-3">
+    <div class="col text-center">
+
+        <a class="btn btn-outline-secondary @(Model.PageNumber > 1 ? "" : "disabled")"
+           asp-action="@(Model.PageNumber > 1 ? "ViewByType" : "")"
+           asp-route-templateId="@Model.TemplateId"
+           asp-route-pageNumber="@(Model.PageNumber - 1)">
+            &laquo; Prev
+        </a>
+
+        @for (int i = 1; i <= Model.TotalSittings / 10 + 1; i++)
+        {
+
+            <a class="btn @(Model.PageNumber == i ? "btn-primary" : "btn-outline-secondary")"
+               asp-action="ViewByType"
+               asp-route-templateId="@Model.TemplateId"
+               asp-route-pageNumber="@i">
+                @i
+            </a>
+
+        }
+
+        <a class="btn btn-outline-secondary @(Model.PageNumber < Model.TotalSittings / 10 + 1 ? "" : "disabled")"
+           asp-action="@(Model.PageNumber < Model.TotalSittings / 10 + 1 ? "ViewByType" : "")"
+           asp-route-templateId="@Model.TemplateId"
+           asp-route-pageNumber="@(Model.PageNumber + 1)">
+            Next &raquo;
+        </a>
+
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Reservations</th>
+                <th>Capacity</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sitting in Model.Sittings)
+            {
+                <tr>
+                    <td class="align-middle text-nowrap">@sitting.StartTime.ToLongDateString()</td>
+                    <td class="align-middle text-nowrap">@sitting.StartTime.ToShortTimeString()</td>
+                    <td class="align-middle text-nowrap">@sitting.EndTime.ToShortTimeString()</td>
+                    <td class="align-middle text-nowrap">@sitting.Reservations.Count</td>
+                    <td class="align-middle text-nowrap">@Math.Round(sitting.Reservations.Sum(r => r.Guests / (double)sitting.Capacity * new TimeSpan(0, r.Duration, 0) / (sitting.EndTime - sitting.StartTime) * 100))%</td>
+                    <td class="align-middle text-nowrap">
+                        <a class="btn btn-primary mr-2" asp-action="Details" asp-route-sittingId="@sitting.Id" asp-route-returnUrl="@returnUrl">View</a>
+                        @if (sitting.IsClosedForBooking)
+                        {
+                            <a class="btn btn-success" asp-action="OpenForBookings" asp-route-id="@sitting.Id" asp-route-returnUrl="@returnUrl">Open Bookings</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-danger" asp-action="CloseForBookings" asp-route-id="@sitting.Id" asp-route-returnUrl="@returnUrl">Close Bookings</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+

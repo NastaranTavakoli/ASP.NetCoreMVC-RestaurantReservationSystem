@@ -1,0 +1,36 @@
+﻿@model ReservationSystemDraft_v1.Data.Restaurant
+
+@{
+    ViewBag.Title = $"{Model.Name} - Admin";
+
+}
+<div class="row mb-3">
+    <div class="col">
+        <h1>@Model.Name</h1>
+        <strong>What would you like to do?</strong>
+    </div>
+</div>
+<section>
+    <div class="row">
+        <div class="col text-center text-sm-left">
+            <div class="mb-2">
+                <a class="btn btn-primary" style="width: 250px;" asp-action="Index" asp-controller="Reservation">Manage Reservations</a>
+            </div>
+            @if (User.IsInRole("Manager"))
+            {
+                <div class="mb-2">
+                    <a class="btn btn-primary" style="width: 250px;" asp-action="Index" asp-controller="Sitting">Manage/Schedule Sittings</a>
+                </div>
+                <div class="mb-2">
+                    <a class="btn btn-primary" style="width: 250px;" asp-action="Index" asp-controller="Area">Manage Areas and Tables</a>
+                </div>
+                <div class="mb-2">
+                    <a class="btn btn-primary" style="width: 250px;" asp-action="Index" asp-controller="Account">Manage Staff</a>
+                </div>
+                <div class="mb-2">
+                    <a class="btn btn-primary" style="width: 250px;" asp-action="Index" asp-controller="Report">View Reports</a>
+                </div>
+            }
+        </div>
+    </div>
+</section>

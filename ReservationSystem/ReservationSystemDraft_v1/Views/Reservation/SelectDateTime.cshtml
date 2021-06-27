@@ -1,0 +1,61 @@
+﻿@model ReservationSystemDraft_v1.Models.Reservation.Create
+
+@await Html.PartialAsync("_SelectedRestaurant", Model.Restaurant)
+
+<div class="row">
+    <div class="col">
+        <h1>Select Date and Time</h1>
+    </div>
+</div>
+
+<form id="selectdatetime-form" asp-action="SelectDateTime" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="row">
+        <div class="form-group col-md-auto">
+            <label asp-for="Guests"></label>
+            <input class="form-control" asp-for="Guests" id="guest" />
+        </div>
+        <div class="form-group col-md-auto">
+            <label asp-for="SelectedDate"></label>
+            <input class="form-control" asp-for="SelectedDate" value="@Model.SelectedDate.ToString("yyyy-MM-dd")" id="datepicker" type="text" />
+        </div>
+    </div>
+    <input type="hidden" asp-for="RestaurantId" />
+    @if (!Model.Availabilities.Any())
+    {
+        <div class="row">
+            <div class="col">
+                <p class="alert alert-info">There are no availabilities for the selected date.</p>
+            </div>
+        </div>
+    }
+    @{
+        var groupsBySittingType = Model.Availabilities.GroupBy(a => a.Sitting.SittingTypeId).Select(grp => grp.ToList()).ToList();
+        foreach (var st in groupsBySittingType)
+        {
+            <div class="row">
+                <div class="col">
+                    <div class="btn-container mb-3">
+                        @{
+                            var description = $"{st[0].Sitting.SittingType.Description} {st[0].Sitting.StartTime.ToString("hh:mm tt")} - {st[0].Sitting.EndTime.ToString("hh:mm tt")}";
+                            <p>@description</p>
+                            foreach (var item in st)
+                            {
+                                <a asp-action="Details" asp-route-restaurantId="@item.Sitting.RestaurantId" asp-route-dateTime="@item.StartTime.ToString()" asp-route-guest="@Model.Guests" class="btn btn-primary" style='margin-bottom: 3px; min-width: 80px'>@item.StartTime.ToString("hh:mm tt")</a>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</form>
+
+@section Styles {
+    <link href="~/lib/jqueryui/jquery-ui.min.css" rel="stylesheet" />
+}
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="~/lib/jqueryui/jquery-ui.js"></script>
+    <script src="~/js/reservation.selectdatetime.js"></script>
+}

@@ -1,0 +1,70 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Reservation.GetReservations
+
+<partial name="_ReservationNavPartial" />
+
+@{
+    string returnUrl = Context.Request.Path.ToString() + Context.Request.QueryString.ToString();
+}
+
+@*<a asp-controller="Reservation" asp-action="Index" class="btn btn-info mb-3">&#10096;</a>
+    <h2 class="d-inline">Pending Reservations:</h2>
+    <hr />*@
+
+@*<form id="indexForm" method="post" asp-action="Today">
+        <div class="d-flex justify-content-between">
+            <div class="form-check-inline">
+                <div class="form-group">
+                    <label for="SearchString">Search</label>
+                    <input class="form-control" asp-for="SearchString" placeholder="Search by name or reservation code"/>
+                </div>
+                <button type="submit" class="btn btn-secondary mt-3">Search</button>
+            </div>
+        </div>
+    </form>*@
+
+@if (!Model.Reservations.Any())
+{
+    <p class="alert alert-info">No Pending reservations</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr><th>Code</th><th>Customer</th><th>Date</th><th>Time</th><th>Number of guest</th><th>More Details...</th><th>Confirmation</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model.Reservations)
+                {
+                    <tr>
+                        <td class="align-middle text-nowrap">
+                            @r.ConfirmationCode
+                        </td>
+                        <td class="align-middle text-nowrap">
+                            @r.Customer.FullName
+                        </td>
+                        <td class="align-middle text-nowrap">
+                            @r.StartTime.ToShortDateString()
+
+                        </td>
+                        <td class="align-middle text-nowrap">
+                            @r.StartTime.ToShortTimeString()
+
+                        </td>
+                        <td class="align-middle text-nowrap">
+                            @r.Guests
+                        </td>
+                        <td class="align-middle text-nowrap">
+                            <a class="btn btn-primary" asp-action="Details" asp-route-id="@r.Id" asp-route-returnUrl="@returnUrl">View Details</a>
+                        </td>
+                        <td class="align-middle text-nowrap">
+                            <a class="btn btn-danger" asp-action="Cancel" asp-route-id="@r.Id" asp-route-returnUrl="@returnUrl">×</a>
+                            <a class="btn btn-success" asp-action="Confirm" asp-route-id="@r.Id" asp-route-returnUrl="@returnUrl">✓</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+}

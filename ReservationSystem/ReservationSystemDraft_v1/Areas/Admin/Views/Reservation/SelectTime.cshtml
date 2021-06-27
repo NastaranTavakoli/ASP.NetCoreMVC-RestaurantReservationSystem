@@ -1,0 +1,131 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.Reservation.Create
+
+<partial name="_ReservationNavPartial" />
+
+
+<h4 class="d-inline">Reservation Details:</h4>
+<hr />
+
+<form id="selectTimeForm" method="post" asp-action="SelectTime">
+    <div class="form-row">
+        <div class="form-group col-auto">
+            <label asp-for="Date"></label>
+            <input id="datePicker" class="form-control" asp-for="Date" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="form-group col-auto">
+            <label asp-for="Duration"></label>
+            <select class="form-control" asp-for="Duration" asp-items="@Model.DurationOptions">
+                <option disabled>Select Duration</option>
+            </select>
+        </div>
+        <div class="form-group col-auto">
+            <label asp-for="Guests"></label>
+            <input id="guestsInput" class="form-control" asp-for="Guests" />
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="form-group col-auto">
+            <h4>Start Time:</h4>
+            <div class="custom-control custom-checkbox my-2">
+                <input class="custom-control-input" asp-for="ShowUnavailableTimeSlots" type="checkbox">
+                <label class="custom-control-label" asp-for="ShowUnavailableTimeSlots"></label>
+            </div>
+        </div>
+    </div>
+
+
+    @if (!Model.Availabilities.Any())
+    {
+        <p class="alert alert-info">No time slot was found</p>
+    }
+    else
+    {
+        var groupedAvailabilities = Model.Availabilities.GroupBy(t => t.Sitting.Id).Select(grp => grp.ToList()).ToList();
+
+        var parms = new Dictionary<string, string>
+        {
+            { "date", Model.Date.ToString("yyyy-MM-dd") },
+            { "guests", Model.Guests.ToString() },
+            { "duration", Model.Duration.ToString() },
+            { "restaurantId", Model.RestaurantId.ToString() },
+            { "sittingId", "" },
+            { "timeSlot", "" }
+        };
+
+
+        @foreach (var groupedAvailability in groupedAvailabilities)
+        {
+            @if (Model.ShowUnavailableTimeSlots)
+            {
+                <table class="table table-striped">
+                    <thead><tr><th>@(groupedAvailability[0].Sitting.Description)</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                @foreach (var availability in groupedAvailability)
+                                {
+                                    parms["sittingId"] = availability.Sitting.Id.ToString();
+                                    parms["timeSlot"] = availability.StartTime.TimeOfDay.ToString();
+                                    if (availability.IsAvailable)
+                                    {
+                                        <a class="btn btn-primary mb-2" asp-action="ConfirmDetails" asp-all-route-data="parms">@availability.StartTime.ToString("hh:mm tt")</a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-secondary mb-2" asp-action="ConfirmDetails" asp-all-route-data="parms">@availability.StartTime.ToString("hh:mm tt")</a>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <table class="table table-striped">
+                    @if (groupedAvailability.Any(a => a.IsAvailable))
+                    {
+                        <thead><tr><th>@(groupedAvailability[0].Sitting.Description)</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    @foreach (var availability in groupedAvailability)
+                                    {
+                                        parms["sittingId"] = availability.Sitting.Id.ToString();
+                                        parms["timeSlot"] = availability.StartTime.TimeOfDay.ToString();
+                                        if (availability.IsAvailable)
+                                        {
+                                            <a class="btn btn-primary mb-2" asp-action="ConfirmDetails" asp-all-route-data="parms">@availability.StartTime.ToString("hh:mm tt")</a>
+                                        }
+                                        else
+                                        {
+                                            if (Model.ShowUnavailableTimeSlots)
+                                            {
+                                                <a class="btn btn-secondary mb-2" asp-action="ConfirmDetails" asp-all-route-data="parms">@availability.StartTime.ToString("hh:mm tt")</a>
+                                            }
+                                        }
+
+                                    }
+                                </td>
+                            </tr>
+                        </tbody>
+                    }
+                </table>
+            }
+        }
+    }
+    <input type="hidden" asp-for="RestaurantName" />
+    <input type="hidden" asp-for="RestaurantId" />
+</form>
+
+@section Scripts{
+    <script>
+        var id = @Model.RestaurantId;
+    </script>
+
+    <script src="~/js/admin.reservation.selectTime.js"></script>
+
+}
+
+

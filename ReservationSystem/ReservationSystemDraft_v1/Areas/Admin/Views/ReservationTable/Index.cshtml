@@ -1,0 +1,183 @@
+﻿@model ReservationSystemDraft_v1.Areas.Admin.Models.ReservationTable.ReservationTableIndex
+
+<partial name="_ReservationNavPartial" />
+
+@*<a href="@ViewBag.ReturnUrl" class="btn btn-primary mb-2">&#10096;</a>
+    <h4 class="d-inline">@DateTime.Today.ToLongDateString() - @DateTime.Today.AddDays(7).ToLongDateString()</h4>
+    <hr />*@
+
+<section class="form-row mb-5">
+    @for (int i = 0; i < 7; i++)
+    {
+        var date = DateTime.Today.AddDays(i);
+        <div class="col-auto mb-1">
+            <a class="text-nowrap btn @(date == Model.Date ? "btn-primary" : "btn-outline-secondary")" asp-action="Index" asp-route-date="@date.ToString("yyyy-MM-dd")">@date.ToString("ddd d")</a>
+        </div>
+    }
+</section>
+
+<div class="row mb-3 justify-content-center">
+    <div class="col text-center">
+        @foreach (var s in Model.Sittings)
+        {
+            <a asp-action="Index" asp-route-sittingId="@s.Id" asp-route-date="@s.StartTime.ToString("yyyy-MM-dd")" class="mx-2 btn @(Model.SittingId == s.Id ? "btn-primary" : "btn-outline-secondary")">@s.SittingType.Description</a>
+        }
+    </div>
+</div>
+
+<div id="errorAlert" class="row mb-3" hidden>
+    <div class="col">
+        <p id="errorMessage" class="alert alert-danger"></p>
+    </div>
+</div>
+
+@if (!Model.Reservations.Any())
+{
+    <p class="alert alert-info">No reservations for this date</p>
+}
+else
+{
+    if (Model.ClashingTables.Any())
+    {
+        <div class="alert alert-warning">
+            <p>There are potential table clashes in this sitting.</p>
+        </div>
+    }
+    <h5>To be Assigned</h5>
+    <div class="table-responsive">
+        <table class="table table-striped ">
+            <thead>
+                <tr><th>Date</th><th>Time</th><th>Customer</th><th>Total Guests</th><th>Reserved Seats</th><th class="w-25">Assigned tables</th><th class="w-25">Add tables</th><th>Tools</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model.Reservations
+                   .Where(r => r.ReservationTables.Sum(rt => rt.Table.Capacity) < r.Guests)
+                   .OrderBy(r => r.StartTime)
+               )
+                {
+                    {
+                        <tr style="@(r.Id == ViewBag.ReservationId ? "background-color: lightskyblue": "")">
+                            <td class="align-middle text-nowrap">
+                                @r.StartTime.ToShortDateString()
+
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                @r.StartTime.ToShortTimeString()
+
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                @r.Customer.FullName
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                @r.Guests
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                @r.ReservationTables.Sum(rt => rt.Table.Capacity)
+                            </td>
+                            <td class="text-nowrap align-middle" id="tablesFor@(r.Id)">
+                                @foreach (var rt in r.ReservationTables)
+                                {
+                                    <button class="btn @(Model.ClashingTables.Contains(rt) ? "btn-warning" : "btn-secondary") p-1" name="remove-table-button" value="@rt.Id">
+                                        @rt.Table.Name
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"></path>
+                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"></path>
+                                        </svg>
+                                    </button>
+                                }
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                <div class="row flex-nowrap" style="width: 180px">
+                                    <select class="form-control col mr-1" asp-items="@Model.Tables">
+                                        <option selected disabled>--</option>
+                                    </select>
+                                    <button class="btn btn-primary col-auto" name="add-table-button" value="@r.Id">
+                                        Add <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"></path>
+                                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                <a class="btn btn-primary" asp-action="SelectTables" asp-route-reservationId="@r.Id" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">Table Finder</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <br />
+
+    <h5>Assigned</h5>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr><th>Date</th><th>Time</th><th>Customer</th><th>Total guests</th><th>Reserved Seats</th><th class="w-25">Assigned tables</th><th class="w-25">Remove Tables</th></tr>
+            </thead>
+            <tbody>
+
+                @foreach (var r in Model.Reservations
+                   .Where(r => r.ReservationTables.Sum(rt => rt.Table.Capacity) >= r.Guests)
+                   .OrderBy(r => r.StartTime)
+                   .ThenBy(r => r.ReservationTables.Any() ? r.ReservationTables[0].Table.Name : null)
+               )
+                {
+                    {
+                        <tr class="@(r.Id == ViewBag.ReservationId ? "bg-primary text-light": "")">
+                            <td class="align-middle text-nowrap">
+                                @r.StartTime.ToShortDateString()
+
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                @r.StartTime.ToShortTimeString()
+
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                @r.Customer.FullName
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                @r.Guests
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                @r.ReservationTables.Sum(rt => rt.Table.Capacity)
+                            </td>
+                            <td class="align-middle text-nowrap" id="tablesFor@(r.Id)">
+                                @foreach (var rt in r.ReservationTables)
+                                {
+                                    <button class="btn @(Model.ClashingTables.Contains(rt) ? "btn-warning" : "btn-secondary") p-1" name="remove-table-button" value="@rt.Id">
+                                        @rt.Table.Name
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"></path>
+                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"></path>
+                                        </svg>
+                                    </button>
+                                }
+                            </td>
+                            <td class="align-middle text-nowrap">
+                                <button class="btn btn-danger p-1" name="remove-all-tables-button" value="@r.Id">
+                                    Remove All <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828l6.879-6.879zm.66 11.34L3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293l.16-.16z"></path>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<section class="row my-2">
+    <div class="col">
+        <a class="btn btn-primary" href="@ViewBag.ReturnUrl">Done</a>
+    </div>
+</section>
+
+@section Scripts
+{
+    <script src="~/js/admin.reservationTable.index.js" type="text/javascript"></script>
+}
